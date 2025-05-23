@@ -1,2 +1,6 @@
 ﻿.vs/MedicalApplication/v17
 MedicalApp/obj
+.vs
+DatabaseAbstractions/obj
+Extensions/bin
+Extensions/obj
