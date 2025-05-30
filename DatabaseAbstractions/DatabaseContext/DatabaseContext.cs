@@ -1,4 +1,5 @@
 ﻿using DatabaseAbstractions.DatabaseContext.Abstractions;
+using DatabaseAbstractions.DatabaseOperations;
 using DatabaseAbstractions.Models.Communication;
 using DatabaseAbstractions.Models.DatabaseModels;
 using DatabaseAbstractions.Models.Enums;
@@ -127,8 +128,8 @@ namespace DatabaseAbstractions.DatabaseContext
 
             if (dbSetProp == null)
             {
-                errorString = $"[{logHeader}] Таблицы типа {type} не существует в контексте базы данных.";
-                _logger.LogInformation(errorString);
+                errorString = $"Таблицы типа {type} не существует в контексте базы данных.";
+                _logger.LogInformation($"[{logHeader}] {errorString}");
                 return new DatabaseResponse<IQueryable<BaseEntity>>
                     (default, logHeader, errorString, ResponseType.TableNotExist, false);
             }
