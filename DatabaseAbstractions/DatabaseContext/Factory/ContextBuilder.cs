@@ -24,14 +24,8 @@ namespace DatabaseAbstractions.DatabaseContext.Factory
         /// </summary>
         public ContextBuilder()
         {
-            Methods = GetType().GetMethods()
-                .Select(methodInfo => new
-                {
-                    Method = methodInfo,
-                    Attribute = methodInfo.GetCustomAttribute<AssignedTypeAttribute>()
-                })
-                .Where(tempVariable => tempVariable.Attribute != null && tempVariable.Attribute != null)
-                .ToDictionary(tempVariable => tempVariable.Attribute.Type, tempVariable => tempVariable.Method);
+            Methods = GetType().GetMethods().Where(p => p.GetCustomAttribute<AssignedTypeAttribute>() != null)
+                .ToDictionary(m => m.GetCustomAttribute<AssignedTypeAttribute>().Type, m => m);
         }
 
         /// <summary>

@@ -2,9 +2,9 @@
 using DatabaseShared.DatabaseModels;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatabaseShared.HelpModels
+namespace DatabaseShared.HelpModels.ForDatabase
 {
-    public class PatientRecord : BaseEntity
+    public class PatientRecordEntity : BaseEntity
     {
         [Column("patient_id")]
         public int PatientId { get; set; }

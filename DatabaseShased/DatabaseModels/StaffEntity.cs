@@ -1,19 +1,13 @@
 ﻿using DatabaseAbstractions.Models.Attributes;
-using DatabaseAbstractions.Models.DatabaseModels;
+using DatabaseShared.HelpModels.ForDatabase;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatabaseShared.DatabaseModels
 {
     [Table("Staff")]
     [AssignedType(typeof(StaffEntity))]
-    public class StaffEntity : BaseEntity
+    public class StaffEntity : PersonInfoEntity
     {
-        [Column("person_info_id")]
-        public int PersonInfoId { get; set; }
-
-        [ForeignKey(nameof(PersonInfoId))]
-        public PersonInfoEntity? PersonInfoEntity { get; set; }
-
         [Column("access_level")]
         public string AccessLevel { get; set; } = string.Empty;
 

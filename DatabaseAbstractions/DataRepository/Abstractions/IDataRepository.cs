@@ -21,6 +21,8 @@ namespace DatabaseAbstractions.DataRepository.Abstractions
 
         void SaveEntity(CacheEntity newEntity);
 
+        void RemoveEntity(CacheEntity newEntity);
+
         TEntity? FindOrDefaultEntity<TEntity>(int id) where TEntity : CacheEntity;
 
         TEntity? FindOrDefaultEntity<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : CacheEntity;

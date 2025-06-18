@@ -1,8 +1,8 @@
 ﻿using DatabaseAbstractions.Models.DatabaseModels;
 
-namespace DatabaseShared.HelpModels
+namespace DatabaseShared.HelpModels.ForDatabase
 {
-    public class StaffTimetableRecord : BaseEntity
+    public class StaffTimetableRecordEntity : BaseEntity
     {
         public int StaffId { get; set; }
 

@@ -7,12 +7,12 @@ namespace DatabaseAbstractions.Models.Configuration.Abstractions
 
     }
 
-    public interface IMigrationsConfigurations : IConfigurationService
+    public interface IMigrationsConfigurations
     {
         public string GetMigrationAssemblyName(DatabaseType type);
     }
 
-    public interface IDatabaseConnectionConfiguration : IConfigurationService
+    public interface IDatabaseConnectionConfiguration
     {
         public DatabaseType GetDatabaseType();
         public string GetConnectionString();

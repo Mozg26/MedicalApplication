@@ -28,14 +28,6 @@ namespace DatabaseAbstractions.DatabaseContext.Factory
                         .EnableSensitiveDataLogging(true)
                         .Options;
             }
-            //else if (dbType == DatabaseType.PostgreSQL)
-            //{
-            //    _options = new DbContextOptionsBuilder<T>()
-            //        .UseNpgsql(connString, opts => opts
-            //            .CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)
-            //            .MigrationsAssembly($"{migrationsAssemblyName}"))
-            //            .Options;
-            //}
             else
                 throw new CreationDatabaseContextException($"[ContextFactoryBase: конструктор] Указанный тип базы данных — [{dbType}] — не поддерживаеся.");
 

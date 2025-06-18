@@ -1,20 +1,14 @@
 ﻿using DatabaseAbstractions.Models.Attributes;
-using DatabaseAbstractions.Models.DatabaseModels;
 using DatabaseShared.Enums;
+using DatabaseShared.HelpModels.ForDatabase;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatabaseShared.DatabaseModels
 {
     [Table("Patients")]
     [AssignedType(typeof(PatientEntity))]
-    public class PatientEntity : BaseEntity
+    public class PatientEntity : PersonInfoEntity
     {
-        [Column("person_info_id")]
-        public int PersonInfoId { get; set; }
-
-        [ForeignKey(nameof(PersonInfoId))]
-        public PersonInfoEntity? PersonInfoEntity { get; set; }
-
         [Column("identification_document_number")]
         public string IdentificationDocumentNumber { get; set; } = string.Empty;
 

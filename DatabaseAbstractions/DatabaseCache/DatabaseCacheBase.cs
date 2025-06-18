@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DatabaseAbstractions.DatabaseCache.Abstractions;
 using DatabaseAbstractions.DatabaseContext.Abstractions;
-using DatabaseAbstractions.DatabaseInitializer.Abstractions;
 using DatabaseAbstractions.DatabaseOperations;
 using DatabaseAbstractions.Models.Attributes;
 using DatabaseAbstractions.Models.CacheModels;
@@ -33,10 +32,6 @@ namespace DatabaseAbstractions.DatabaseCache
         /// </summary>
         protected readonly IContextFactory<ContextType> _dbContextFactory;
 
-        protected readonly ICacheUpdater _fingerprintUpdater;
-
-        protected readonly IDatabaseInitializer _databaseInitializer;
-
         /// <summary>
         /// Потокобезопасная коллекция наборов отпечатка базы данных.
         /// </summary>
@@ -46,10 +41,6 @@ namespace DatabaseAbstractions.DatabaseCache
         /// Конвертер с методами трансформации объектов БД в кэш-сущности и обратно
         /// </summary>
         protected readonly CacheConverter fingerprintConverter;
-
-        protected Dictionary<string, Type> _tableToDatabaseEntityTypeDictionary;
-
-        protected Dictionary<string, Type> _tableToFingerprintEntityTypeDictionary;
 
         /// <summary>
         /// Имя класса.
@@ -66,7 +57,7 @@ namespace DatabaseAbstractions.DatabaseCache
         /// </summary>
         /// <param name="dbContextFactory">Интерфейс фабрики контекста базы данных.</param>
         /// <param name="logger">Логгер.</param>
-        public DatabaseCacheBase(IContextFactory<ContextType> dbContextFactory, ICacheUpdater fingerprintUpdater, IDatabaseInitializer databaseInitializer, IMapper mapper, ILogger logger)
+        public DatabaseCacheBase(IContextFactory<ContextType> dbContextFactory, IMapper mapper, ILogger logger)
         {
             _className = GetType().Name;
 
@@ -74,41 +65,10 @@ namespace DatabaseAbstractions.DatabaseCache
 
             _dbContextFactory = dbContextFactory;
 
-            _fingerprintUpdater = fingerprintUpdater;
-
-            _databaseInitializer = databaseInitializer;
-
             fingerprintConverter = new CacheConverter(mapper);
-
-            _tableToDatabaseEntityTypeDictionary = Assembly.GetCallingAssembly().GetTypes()
-               .Where(type => type.IsSubclassOf(typeof(BaseEntity)))
-               .Select(type => new
-               {
-                   Type = type,
-                   TableAttribute = type.GetCustomAttribute<TableAttribute>()
-               })
-               .Where(anonymousType => anonymousType.TableAttribute != null)
-               .ToDictionary(anonymousType => anonymousType.TableAttribute!.Name, anonymousType => anonymousType.Type);
-
-            _tableToFingerprintEntityTypeDictionary = Assembly.GetCallingAssembly().GetTypes()
-                .Where(type => type.IsSubclassOf(typeof(BaseEntity)))
-                .Select(type => new
-                {
-                    Type = type,
-                    TableAttribute = type.GetCustomAttribute<TableAttribute>(),
-                    AssignedTypeAttribute = type.GetCustomAttribute<AssignedTypeAttribute>()
-                })
-                .Where(anonymousType => anonymousType.TableAttribute != null && anonymousType.AssignedTypeAttribute != null)
-                .ToDictionary(anonymousType => anonymousType.TableAttribute!.Name, anonymousType => anonymousType.AssignedTypeAttribute!.Type);
 
             _fingerprintSets = [];
 
-        }
-
-        public void Configure()
-        {
-            _databaseInitializer.Configure();
-            _fingerprintUpdater.Configure();
         }
 
         public virtual async Task<DatabaseResponse> Fill()
@@ -125,11 +85,6 @@ namespace DatabaseAbstractions.DatabaseCache
 
             try
             {
-                _databaseInitializer.Configure();
-                await _databaseInitializer.CreateDatabaseInfrastructureAsync();
-
-                _fingerprintUpdater.Configure();
-
                 var dbTypes = databaseContext.GetTypes();
 
                 _logger.LogInformation($"[{logHeader}] Обнаружено {dbTypes.Count} таблиц для заполнения: {string.Join(",", dbTypes.Select(t => t.Name))}.");
@@ -170,9 +125,6 @@ namespace DatabaseAbstractions.DatabaseCache
                     AddFingerprintSet(fingerprintSet, type);
                 }
 
-                _fingerprintUpdater.Start();
-                _fingerprintUpdater.OnChangeDetected += OnChangeDetected;
-
                 return DatabaseResponse.CorrectResponse(logHeader);
             }
             catch (IncorrectResponseException ex)
@@ -195,11 +147,6 @@ namespace DatabaseAbstractions.DatabaseCache
                 cacheSet.Value.Clear();
             }
             _fingerprintSets.Clear();
-
-            _fingerprintUpdater.OnChangeDetected -= OnChangeDetected;
-            _fingerprintUpdater.Stop();
-
-            _databaseInitializer.ClearDatabaseInfrastructureAsync();
         }
 
         #region Find/GetMethods
@@ -265,49 +212,6 @@ namespace DatabaseAbstractions.DatabaseCache
                 _logger.LogError($"[{logHeader}] Набор типа {typeof(T).Name} НЕ НАЙДЕН. {ex.Message}");
                 return default;
             }
-        }
-
-        #endregion
-
-        #region FingerprintUpdater
-
-        private void OnChangeDetected(DatabaseChangeModel changeModel)
-        {
-            Type fingerprintEntityType = ToFingerprintEntityType(changeModel.TableName);
-
-            var obj = changeModel.Content.ConvertFromJson(fingerprintEntityType);
-
-            if (obj == null) { return; }
-
-            var entity = (CacheEntity)obj;
-
-            switch (changeModel.ChangeType)
-            {
-                case (CacheUpdateType.INSERT):
-                    _logger.LogDebug($"Сущность {entity.ToString()} добавлена в кэш");
-                    AddEntity(entity);
-                    break;
-
-                case (CacheUpdateType.UPDATE):
-                    _logger.LogInformation($"Сущность {entity.ToString()} обновлена в кэшэ");
-                    SaveEntity(entity);
-                    break;
-
-                case (CacheUpdateType.DELETE):
-                    _logger.LogInformation($"Сущность {entity.ToString()} удалена из кэша");
-                    RemoveEntity(entity);
-                    break;
-            }
-        }
-
-        protected Type ToDatabaseEntityType(string tableName)
-        {
-            return _tableToDatabaseEntityTypeDictionary[tableName];
-        }
-
-        protected Type ToFingerprintEntityType(string tableName)
-        {
-            return _tableToFingerprintEntityTypeDictionary[tableName];
         }
 
         #endregion

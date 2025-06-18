@@ -8,23 +8,17 @@ namespace DatabaseShared.DatabaseModels
     [AssignedType(typeof(AppointmentEntity))]
     public class AppointmentEntity : BaseEntity
     {
+        [Column("doctor_appointment_Id")]
+        public int DoctorAppointmentId { get; set; }
+
+        [ForeignKey(nameof(DoctorAppointmentId))]
+        public DoctorAppointmentEntity? DoctorAppointmentEntity { get; set; }
+
         [Column("appointment_type")]
         public string AppointmentType { get; set; } = string.Empty;
 
         [Column("appointment_date_time")]
         public DateTime AppointmentDateTime { get; set; }
-
-        [Column("patient_id")]
-        public int PatientId { get; set; }
-
-        [ForeignKey(nameof(PatientId))]
-        public PatientEntity? PatientEntity { get; set; }
-
-        [Column("staff_id")]
-        public int StaffId { get; set; }
-
-        [ForeignKey(nameof(StaffId))]
-        public StaffEntity? StaffEntity { get; set; }
 
         [Column("appointment_status")]
         public string AppointmentStatus { get; set; } = string.Empty;

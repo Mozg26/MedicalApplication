@@ -1,8 +1,8 @@
-﻿using DatabaseShared.HelpModels;
+﻿using DatabaseShared.HelpModels.ForDatabase;
 
 namespace DatabaseShared.DatabaseModels
 {
-    public class StaffAbsenceEntity : StaffTimetableRecord
+    public class StaffAbsenceEntity : StaffTimetableRecordEntity
     {
     }
 }

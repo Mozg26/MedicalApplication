@@ -73,7 +73,7 @@ namespace DatabaseAbstractions.DatabaseContext
             var dbSetProps = GetType().GetProperties().Where(prorertyInfo => prorertyInfo.PropertyType.IsGenericType
             && typeof(DbSet<>).IsAssignableFrom(prorertyInfo.PropertyType.GetGenericTypeDefinition()));
 
-            List<object?> dbSets = dbSetProps.Select(x => x.GetValue(this, null)).ToList();
+            var dbSets = dbSetProps.Select(x => x.GetValue(this, null)).ToList();
 
             var resultList = new List<IQueryable<BaseEntity>>();
 

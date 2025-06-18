@@ -147,7 +147,7 @@ namespace DatabaseAbstractions.DataRepository
         /// Метод удаления сущности из отпечатка базы данных.
         /// </summary>
         /// <param name="entity">Сущность для удаления.</param>
-        protected void RemoveEntity(CacheEntity newEntity)
+        public void RemoveEntity(CacheEntity newEntity)
         {
             _databaseFingerprint.RemoveEntity(newEntity);
             var model = new CacheChangeModel(newEntity, DatabaseChangeType.Delete);

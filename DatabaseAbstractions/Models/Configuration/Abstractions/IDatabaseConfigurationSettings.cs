@@ -8,12 +8,12 @@ namespace DatabaseAbstractions.Models.Configuration.Abstractions
         public string AppVersion { get; set; }
     }
 
-    public interface IMigrationsConfigurationSettings : IConfigurationSettings
+    public interface IMigrationsConfigurationSettings
     {
         public Dictionary<DatabaseType, string> MigrationAssemblies { get; set; }
     }
 
-    public interface IDatabaseSettings : IConfigurationSettings
+    public interface IDatabaseSettings
     {
         public DatabaseType DatabaseType { get; set; }
         public string ConnectionString { get; set; }

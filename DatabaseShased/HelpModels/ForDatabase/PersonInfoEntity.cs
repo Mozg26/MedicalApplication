@@ -1,18 +1,11 @@
 ﻿using DatabaseAbstractions.Models.DatabaseModels;
-using DatabaseShared.DatabaseModels;
 using DatabaseShared.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatabaseShared.HelpModels
+namespace DatabaseShared.HelpModels.ForDatabase
 {
-    public class PersonInfo : BaseEntity
+    public class PersonInfoEntity : BaseEntity
     {
-        [Column("login")]
-        public string Login { get; set; } = string.Empty;
-
-        [ForeignKey(nameof(Login))]
-        public LoginSystemEntity? LoginSystemEntity { get; set; }
-
         [Column("last_name")]
         public string LastName { get; set; } = string.Empty;
 

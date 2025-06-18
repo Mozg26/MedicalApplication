@@ -1,8 +1,8 @@
-﻿using DatabaseShared.HelpModels;
+﻿using DatabaseShared.HelpModels.ForDatabase;
 
 namespace DatabaseShared.DatabaseModels
 {
-    public class TimetableEntity : StaffTimetableRecord
+    public class TimetableEntity : StaffTimetableRecordEntity
     {
         public string DayOfWeek { get; set; }
     }
